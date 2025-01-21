@@ -21,5 +21,6 @@ namespace Core.Interfaces
         //For Projection
         Task<TResult?> GetEntityWithSpec<TResult>(ISpecifications<T, TResult> spec);
         Task<IReadOnlyList<TResult>?> ListAsync<TResult>(ISpecifications<T, TResult> spec);
+        Task<int> CountAsync(ISpecifications<T> spec);
     }
 }

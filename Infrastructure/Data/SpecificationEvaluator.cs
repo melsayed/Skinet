@@ -23,6 +23,9 @@ namespace Infrastructure.Data
             if (spec.IsDistinct)
                 query = query.Distinct();
 
+            if (spec.IsPaginationEnabled)
+                query = query.Skip(spec.Skip).Take(spec.Take);
+
             return query;
         }
 
@@ -44,6 +47,9 @@ namespace Infrastructure.Data
 
             if (spec.IsDistinct && selectedQuery != null)
                 selectedQuery = selectedQuery.Distinct();
+
+            if (spec.IsPaginationEnabled && selectedQuery != null)
+                selectedQuery = selectedQuery.Skip(spec.Skip).Take(spec.Take);
 
             return selectedQuery ?? query.Cast<TResult>();
         }
