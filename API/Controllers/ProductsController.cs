@@ -21,7 +21,7 @@ namespace API.Controllers
         public async Task<ActionResult<Pagination<Product>>> GetProducts([FromQuery] ProductSpecParams specParams)
         {
             var spec = new ProductSpecification(specParams);
-            
+
             return await CreatePagedResult(repo, spec, specParams.PageIndex, specParams.PageSize);
 
         }
@@ -80,5 +80,9 @@ namespace API.Controllers
 
             return BadRequest("Problem deleting the product");
         }
+
+        [HttpGet("exception")]
+        public ActionResult ThrowException() => throw new Exception("error here");
+
     }
 }
