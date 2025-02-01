@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
   selector: 'app-header',
   standalone: true,
   imports: [
-     MatIconModule,
+    MatIconModule,
      MatButtonModule,
      MatBadgeModule
   ],
