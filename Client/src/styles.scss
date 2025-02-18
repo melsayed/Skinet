@@ -1,5 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
-@use '@angular/material' as mat;
+@use "@angular/material" as mat;
 
 @import "tailwindcss";
 @import "https://fonts.googleapis.com/icon?family=Material+Icons";
@@ -9,22 +9,29 @@ $customTheme: mat.define-theme();
 
 @include mat.core();
 
-.custom-theme{
-    @include mat.all-component-themes($customTheme);
+.custom-theme {
+  @include mat.all-component-themes($customTheme);
 
-    .mdc-button, .mdc-raised-button, .mdc-stroked-button, .mdc-flat-button{
-        @apply rounded-md;
-    }
+  .mdc-button,
+  .mdc-raised-button,
+  .mdc-stroked-button,
+  .mdc-flat-button {
+    @apply rounded-md;
+  }
 }
 
-.container{
-    @apply mx-auto max-w-screen-2xl;
+.container {
+  @apply mx-auto max-w-screen-2xl;
 }
 
-.text-primary{
-    color: #7d00fa;
+.text-primary {
+  color: #7d00fa;
 }
 
-button.match-input-height{
-    height: var(--mat-form-field-container-height) !important;
+button.match-input-height {
+  height: var(--mat-form-field-container-height) !important;
+}
+
+.mdc-notched-outline__notch {
+  border-right-style: none !important;
 }
