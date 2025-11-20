@@ -25,7 +25,7 @@ export class FiltersDialogComponent {
     this.dialogRef.close({
       selectedBrands: this.selectedBrands,
       selectedTypes: this.selectedTypes
-    })
+    });
   }
 }
 
