@@ -21,6 +21,9 @@ export class ShopService {
     if (shopParams.types.length > 0)
       params = params.append('types', shopParams.types.join(','));
 
+    if (shopParams.search)
+      params = params.append('search', shopParams.search);
+
     if (shopParams.sort)
       params = params.append('sort', shopParams.sort);
 
@@ -30,6 +33,10 @@ export class ShopService {
     console.log(params.toString());
 
     return this.http.get<Pagination<Product>>(this.baseURL + 'products', { params });
+  }
+
+  getProduct(id: number) {
+    return this.http.get<Product>(this.baseURL + 'products/' + id);
   }
 
   getTypes() {

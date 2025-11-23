@@ -5,7 +5,7 @@
 }
 
 .text-primary {
-  color: #7d00fa;
+  @apply text-blue-700;
 }
 
 button.match-input-height {
