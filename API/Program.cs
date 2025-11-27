@@ -1,7 +1,9 @@
 using API.Middleware;
 using Core.Interfaces;
 using Infrastructure.Data;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,13 @@ builder.Services.AddDbContext<StoreContext>(opt => opt.UseSqlServer(builder.Conf
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddCors();
+builder.Services.AddSingleton<IConnectionMultiplexer>(config =>
+{
+    var connstring = builder.Configuration.GetConnectionString("Redis") ?? throw new Exception("Redis connection string is null");
+    var configuration = ConfigurationOptions.Parse(connstring, true);
+    return ConnectionMultiplexer.Connect(configuration);
+});
+builder.Services.AddSingleton<ICartService, CartService>();
 
 var app = builder.Build();
 
@@ -25,7 +34,7 @@ var app = builder.Build();
 
 //app.UseAuthorization();
 app.UseMiddleware<ExceptionMiddleware>();
-app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200", "https://localhost:4200","http://localhost:4400", "https://localhost:4400"));
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200", "https://localhost:4200", "http://localhost:4400", "https://localhost:4400"));
 
 app.MapControllers();
 
