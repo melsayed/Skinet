@@ -1,1 +1,11 @@
-<p>cart works!</p>
+<section>
+    <div class="text-3xl font-bold">
+        Shopping Cart {{cartService.orderTotal()}}</div>
+    <div class="flex w-full items-start gap-6 mt-32">
+        <div class="w-3/4">
+            @for (item of cartService.cart()?.items; track item.productId) {
+            <app-cart-item [item]="item"></app-cart-item>
+            }
+        </div>
+    </div>
+</section>
