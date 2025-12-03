@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using API.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -39,6 +41,15 @@ namespace API.Controllers
         public IActionResult GetValidationError(CreateProductDto product)
         {
             return Ok();
+        }
+
+        [Authorize]
+        [HttpGet("secret")]
+        public ActionResult Secret()
+        {
+            var name = User.FindFirst(ClaimTypes.Name)?.Value;
+            var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return Ok($"Hello {name} with ID {id}, you are authorized to access this secret endpoint.");
         }
     }
 }
