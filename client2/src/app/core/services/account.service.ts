@@ -51,4 +51,7 @@ export class AccountService {
     //   }
     // );
   }
+   getAuthState() {
+    return this.http.get<{ isAuthenticated: boolean }>(this.baseURL + 'account/auth-state');
+  }
 }
