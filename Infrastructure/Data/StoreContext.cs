@@ -10,6 +10,7 @@ public class StoreContext(DbContextOptions<StoreContext> options) : IdentityDbCo
 {
     public DbSet<Product> Products { get; set; }
     public DbSet<Address> Addresss { get; set; }
+    public DbSet<DeliveryMethod> DeliveryMethods { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
