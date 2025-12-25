@@ -15,5 +15,6 @@ public class StoreContext(DbContextOptions<StoreContext> options) : IdentityDbCo
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ProductConfiguration).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(DeliveryMethodConfiguration).Assembly);
     }
 }

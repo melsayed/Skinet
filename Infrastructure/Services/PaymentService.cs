@@ -18,7 +18,7 @@ namespace Infrastructure.Services
         {
             StripeConfiguration.ApiKey = config["StripeSettings:SecretKey"];
             var cart = await cartService.GetCartAsync(cartId);
-            if (cart is null) return null;
+            if (cart is null or { Items.Count: 0 }) return null;
 
             var shippingPrice = 0m;
 
@@ -28,8 +28,6 @@ namespace Infrastructure.Services
                 if (delieveryMethod is null) return null;
                 shippingPrice = delieveryMethod.Price;
             }
-
-            if (cart.Items.Count == 0) return null;
 
             foreach (var item in cart.Items)
             {
