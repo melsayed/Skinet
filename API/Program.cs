@@ -41,7 +41,7 @@ var app = builder.Build();
 //app.UseAuthorization();
 app.UseMiddleware<ExceptionMiddleware>();
 app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowCredentials() //This to Allow receiving Cookie from client
-.WithOrigins("http://localhost:4200", "https://localhost:4200", "http://localhost:4400", "https://localhost:4400"));
+.WithOrigins("http://localhost:4200", "https://localhost:4200", "http://localhost:4400", "https://localhost:4400","http://localhost:6002","https://localhost:6002"));
 
 app.MapControllers();
 
