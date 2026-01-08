@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { loadStripe, Stripe, StripeAddressElement, StripeAddressElementOptions, StripeElements } from "@stripe/stripe-js";
+import { loadStripe, Stripe, StripeAddressElement, StripeAddressElementOptions, StripeElements, StripePaymentElement } from "@stripe/stripe-js";
 import { environment } from '../../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { CartService } from './cart.service';
@@ -18,6 +18,7 @@ export class StripService {
   private stripPromise: Promise<Stripe | null>;
   private elements?: StripeElements;
   private addressElement?: StripeAddressElement;
+  private paymentElement?: StripePaymentElement;
 
   constructor() {
     this.stripPromise = loadStripe(environment.stripePublicKey);
@@ -38,6 +39,17 @@ export class StripService {
         throw new Error("Stripe failed to load.");
     }
     return this.elements;
+  }
+
+  async createPaymentElement() {
+    if (!this.paymentElement) {
+      const elements = await this.initializeElements();
+      if (elements)
+        this.paymentElement = elements.create('payment');
+      else
+        throw new Error("Elements instance has not been loaded")
+    }
+    return this.paymentElement;
   }
 
   async createAddressElement() {
@@ -70,12 +82,25 @@ export class StripService {
     return this.addressElement;
   }
 
+  async createConfirmationToken() {
+    const stripe = await this.getStripeInstance();
+    const elements = await this.initializeElements();
+    const result = await elements.submit();
+    if (result.error)
+      throw new Error(result.error.message);
+
+    if (stripe)
+      return await stripe.createConfirmationToken({ elements });
+    else
+      throw new Error("Stripe not available");
+  }
+
   createOrUpdatePaymentIntent() {
     const cart = this.cartService.cart();
     if (!cart) throw new Error('Problem with Cart');
     return this.http.post<Cart>(this.baseUrl + cart.id, {}).pipe(
       map(cart => {
-        this.cartService.cart.set(cart);
+        this.cartService.setCart(cart);
         return cart;
       })
     )
@@ -83,6 +108,7 @@ export class StripService {
 
   disposeElements() {
     this.addressElement = undefined;
+    this.paymentElement = undefined;
     this.elements = undefined;
   }
 }
