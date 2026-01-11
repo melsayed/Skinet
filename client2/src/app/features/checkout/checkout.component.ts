@@ -2,7 +2,7 @@ import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { OrderSummaryComponent } from "../../shared/components/order-summary/order-summary.component";
 import { MatStepper, MatStep, MatStepperNext, MatStepperPrevious } from '@angular/material/stepper';
 import { MatCheckbox, MatCheckboxChange } from "@angular/material/checkbox";
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatButton } from '@angular/material/button';
 import { StripService } from '../../core/services/strip.service';
 import { ConfirmationToken, StripeAddressElement, StripeAddressElementChangeEvent, StripePaymentElement, StripePaymentElementChangeEvent } from '@stripe/stripe-js';
@@ -15,10 +15,11 @@ import { CheckoutDeliveryComponent } from "./checkout-delivery/checkout-delivery
 import { CheckoutReviewComponent } from "./checkout-review/checkout-review.component";
 import { CartService } from '../../core/services/cart.service';
 import { CurrencyPipe } from '@angular/common';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-checkout',
-  imports: [OrderSummaryComponent, MatStepper, MatStep, RouterLink, MatButton, MatStepperNext, MatCheckbox, CheckoutDeliveryComponent, MatStepperPrevious, CheckoutReviewComponent, CurrencyPipe],
+  imports: [OrderSummaryComponent, MatStepper, MatStep, RouterLink, MatButton, MatStepperNext, MatCheckbox, CheckoutDeliveryComponent, MatStepperPrevious, CheckoutReviewComponent, CurrencyPipe, MatProgressSpinner],
   standalone: true,
   templateUrl: './checkout.component.html',
   styleUrl: './checkout.component.scss',
@@ -27,6 +28,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   private stripeService = inject(StripService);
   private accountService = inject(AccountService);
   private snackBar = inject(SnackbarService);
+  private router = inject(Router);
   cartService = inject(CartService);
   addressElement?: StripeAddressElement;
   paymentElement?: StripePaymentElement;
@@ -36,6 +38,7 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   );
 
   confirmationToken?: ConfirmationToken;
+  loading: boolean = false;
 
   async ngOnInit() {
     try {
@@ -80,6 +83,26 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         if (event.selectedIndex === 3) {
           await this.getConfirmationToken();
         }
+  }
+  async confirmPayment(stepper: MatStepper) {
+    this.loading = true;
+    try {
+      if (this.confirmationToken) {
+        const result = await this.stripeService.confirmPay(this.confirmationToken);
+        if (result.error)
+          throw new Error(result.error.message);
+        else {
+          this.cartService.deleteCart();
+          this.cartService.selectedDelivery.set(null);
+          this.router.navigateByUrl('/checkout/success');
+        }
+      }
+    } catch (error: any) {
+      this.snackBar.error(error.message || 'Failed to confirm payment. Please try again later.');
+    }
+    finally {
+      this.loading = false;
+    }
   }
 
   handleAddressChange = (event: StripeAddressElementChangeEvent) => {
